@@ -212,7 +212,7 @@ def obrazac_vremena():
                         if weather_response.status_code == 200:
                             weather_data = weather_response.json()
 
-            return render_template('prikaz_vremena.html', weather_data=weather_data)
+            return render_template('prikaz_vremena.html', weather_data=weather_data, naselje=naselje)
 
     return render_template('obrazac_vremena.html', drzave=drzave, naselja=naselja, odabrana_drzava_id=odabrana_drzava_id, geocoordinates=geocoordinates, weather_data=weather_data)
 
