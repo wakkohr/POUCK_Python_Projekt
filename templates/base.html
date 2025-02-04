@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="hr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %} Aplikacija za vremensku prognozu {% endblock %}</title>
+
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+      integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+      crossorigin="anonymous"
+    />
+    <!-- link za prikaz ikona -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!--
+      Važno!
+
+      HTML stranice obrazac_vremena.html i prikaz_vremena.html koriste main-container jer pružaju centralizirani prikaz sadržaja na ekranu.
+      Ovaj stil omogućava da ključni elementi (forma za unos ili prikaz rezultata) budu vizualno istaknuti i pozicionirani u središtu stranice, što poboljšava korisničko iskustvo.
+
+      Ostale stranice, koje možda nemaju centraliziran sadržaj ili služe za prikaz informacija raspoređenih na različitim dijelovima stranice (poput izbornika, tablica ili popisa),
+      ne trebaju koristiti main-container, jer bi centralizacija u tim slučajevima mogla nepotrebno ograničiti dizajn i raspored elemenata.
+    -->
+    <style>
+      html, body {
+          margin: 0;
+          padding: 0;
+          width: 100%;
+          height: 100%;
+      }
+
+      select {
+        display: inline-block;
+        width: 50ch;
+      }
+
+      .container {
+          display: grid;
+          grid-template-rows: 1fr auto; /* 1fr za ostatak sadržaja, auto za dno */
+          min-height: 100vh; /* Da bi se kontejner proširio do dna stranice */
+      }
+
+      .full-screen {
+          display: flex;
+          flex-direction: column;
+          height: 100vh; /* Zauzmi cijeli ekran */
+      }
+
+      nav {
+          background-color: #333;
+          color: white;
+          padding: 20px;
+          text-align: center;
+          width: 100%; /* Popuni širinu */
+      }
+
+      .main-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 100%;
+          flex-grow: 1; /* Preostali prostor za main-container */
+          height: 100vh;
+          margin: 0px;
+          padding: 0px;
+          flex-direction: column;
+          background: rgba(0,0,0, .075);
+          font-size: 16px;
+          line-height: 0.5em;
+      }
+
+      .data-container {
+          width: clamp(650px, 30vw, 900px);
+          height: auto;
+          box-sizing: border-box;
+          padding: 2rem;
+          border-radius: .3rem;
+          box-shadow: 0px 3px 20px rgba(0,0,0, .15);
+          background: white;
+      }
+
+      .fancy-label-input-container {
+          padding: 0.7rem;
+          display: flex;                  /* Koristimo flex za raspored stavki */
+          flex-direction: column;         /* Stavke će biti poređane vertikalno */
+          gap: 0.5rem;                      /* Razmak između stavki */
+          align-items: flex-start;        /* Poravnava stavke sa početkom */
+      }
+
+      label, p {
+          margin-bottom: 0.5vw;
+          font-size: 1rem;                /* Standardna veličina fonta */
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <div class="full-screen">
+      {% block izbornik %}
+    <nav>
+        <a href="{{ url_for('pocetna') }}">Početna</a>
+        <a href="{{ url_for('obrazac_vremena', odabrana_drzava_id=odabrana_drzava_id) }}">Prognoza i kvaliteta zraka</a>
+        <a href="{{ url_for('drzave') }}">Države</a>
+        <a href="{{ url_for('naselja') }}">Naselja</a>
+    </nav>
+      <style>
+        nav a {margin-right: 25px;}
+      </style>
+      {% endblock %}
+
+      {% block sadrzaj %}
+      {% endblock %}
+  </div>
+  </body>
+</html>

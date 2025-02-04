@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block sadrzaj %}
+    <table class="w3-table w3-bordered w3-striped w3-hoverable">
+        <tr>
+            <th>ID</th>
+            <th>Naziv</th>
+            <th>ISO2</th>
+            <th>Površina</th>
+            <th>Broj stanovnika</th>
+            <th>Kontinent</th>
+            <th>Valuta</th>
+            <th>Jezici</th>
+            <th>CRUD</th>
+        </tr>
+        {% for drzava in lista_drzava %}
+        <tr>
+            <td>{{drzava.ID}}</td>
+            <td>{{drzava.Naziv}}</td>
+            <td>{{drzava.ISO2}}</td>
+            <td>{{drzava.Povrsina}}</td>
+            <td>{{drzava.Broj_stanovnika}}</td>
+            <td>{{drzava.Kontinent}}</td>
+            <td>{{drzava.Valuta}}</td>
+            <td>{{drzava.Jezici}}</td>
+            <td>
+                <a href="{{ url_for('drzava_obrazac', drzava_id=drzava.ID) }}">
+                    <button>
+                        <i class="fas fa-pencil-alt"></i> Uredi
+                    </button>
+                </a>
+                <a href="{{ url_for('drzava_brisi', drzava_id=drzava.ID) }}" onclick="return confirm('Jeste li sigurni?')">
+                    <button>
+                        <i class="fas fa-trash-alt"></i> Obriši
+                    </button>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{{ url_for('drzava_obrazac', drzava_id=0) }}">
+        <button class="w3-button w3-blue">
+            <i class="fas fa-plus"></i> Dodaj
+        </button>
+    </a>
+{% endblock %}

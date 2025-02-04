@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block sadrzaj %}
+<div class="main-container" style="display: flex; justify-content: center;">
+    <div class="data-container" style="width: 100%; max-width: 515px;">
+        <h2 style="text-align: center; margin-bottom: 30px;">Aplikacija za prikaz vremena</h2>
+        <form action="/obrazac_vremena" name="f" method="POST">
+            <!-- Koristite ovaj <div> s klasom "fancy-label-input-container" za svaku kombinaciju labele i inputa/selecta kako biste osigurali dosljedan izgled i stil unosa podataka u formi. -->
+            <div class="fancy-label-input-container">
+                <label for="drzava">Odaberite državu:</label>
+                <select name="drzava" id="drzava" onchange="this.form.submit()">
+                    <option value="" disabled selected>-- Odaberite državu --</option>
+                    {% for drzava in drzave %}
+                    <option value="{{ drzava.ID }}" {% if odabrana_drzava_id|string == drzava.ID|string %}selected{% endif %}>
+                        {{ drzava.Naziv }}
+                    </option>
+                    {% endfor %}
+                </select>
+
+                <label for="naselje">Odaberite naselje:</label>
+                <select name="naselje" id="naselje">
+                    <option value="" disabled selected>-- Odaberite naselje --</option>
+                    {% for naselje in naselja %}
+                    <option value="{{ naselje.ID }}">{{ naselje.Naziv }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="fancy-label-input-container">
+                <input type="submit" value="Prikaz prognoze" class="w3-button w3-blue" style="align-self: center; font-size: 16px; padding: 15px;">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

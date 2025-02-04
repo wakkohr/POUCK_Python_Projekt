@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block sadrzaj %}
+    <table class="w3-table w3-bordered w3-striped w3-hoverable">
+        <tr>
+            <th>ID</th>
+            <th>Naziv</th>
+            <th>Država ID</th>
+            <th>Zemljopisna širina</th>
+            <th>Zemljopisna dužina</th>
+            <th>Kategorija naselja</th>
+            <th>Površina</th>
+            <th>Broj stanovnika</th>
+            <th>Poznate osobe</th>
+            <th>CRUD</th>
+        </tr>
+        {% for naselje in lista_naselja %}
+        <tr>
+            <td>{{naselje.ID}}</td>
+            <td>{{naselje.Naziv}}</td>
+            <td>{{naselje.Drzava_ID}}</td>
+            <td>{{naselje.Zemljopisna_sirina}}</td>
+            <td>{{naselje.Zemljopisna_duzina}}</td>
+            <td>{{naselje.Kategorija_naselja}}</td>
+            <td>{{naselje.Povrsina}}</td>
+            <td>{{naselje.Broj_stanovnika}}</td>
+            <td>{{naselje.Poznate_osobe}}</td>
+            <td>
+                <a href="{{ url_for('naselje_obrazac', naselje_id=naselje.ID) }}">
+                    <button>
+                        <i class="fas fa-pencil-alt"></i> Uredi
+                    </button>
+                </a>
+                <a href="{{ url_for('naselje_brisi', naselje_id=naselje.ID) }}" onclick="return confirm('Jeste li sigurni?')">
+                    <button>
+                        <i class="fas fa-trash-alt"></i> Obriši
+                    </button>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{{ url_for('naselje_obrazac', naselje_id=0) }}">
+        <button class="w3-button w3-blue">
+            <i class="fas fa-plus"></i> Dodaj
+        </button>
+    </a>
+{% endblock %}

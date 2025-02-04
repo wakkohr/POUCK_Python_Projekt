@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}
+Unos podataka
+{% endblock %}
+
+{% block sadrzaj %}
+    <h1>Unos podataka države</h1>
+
+    <form action="{{ request.path }}" method="POST" name="f">
+        <label for="naziv">Naziv: <span style="color: red;">*</span> </label>
+        <input type="text" id="naziv" name="naziv" maxlength="100" value="{{ drzava.Naziv }}" required>
+        <br>
+
+        <label for="iso2">ISO2: <span style="color: red;">*</span> </label>
+        <input type="text" id="iso2" name="iso2" pattern="[A-Z]{2}" value="{{ drzava.ISO2 }}" required>
+        <br>
+
+        <label for="povrsina">Površina: </label>
+        <input type="number" id="povrsina" name="povrsina" min="0" step="0.01" value="{{ drzava.Povrsina }}">
+        <br>
+
+        <label for="broj_stanovnika">Broj stanovnika: </label>
+        <input type="number" id="broj_stanovnika" name="broj_stanovnika" min="0" step="1" value="{{ drzava.Broj_stanovnika }}">
+        <br>
+
+        <label for="kontinent">Kontinent: <span style="color: red;">*</span> </label>
+        <select id="kontinent" name="kontinent" required>
+            <option value="" disabled selected>-- Odaberite kontinent --</option>
+            {% for kontinent in kontinenti %}
+                <option value="{{ kontinent }}" {% if drzava and drzava.Kontinent == kontinent %}selected{% endif %}>{{ kontinent }}</option>
+            {% endfor %}
+        </select>
+        <br>
+
+        <label for="valuta">Valuta: <span style="color: red;">*</span> </label>
+        <input type="text" id="valuta" name="valuta" value="{{ drzava.Valuta }}" required>
+        <br>
+
+        <label for="jezici">Jezici: <span style="color: red;">*</span> </label>
+        <input type="text" id="jezici" name="jezici" value="{{ drzava.Jezici }}" required>
+        <br>
+
+        <br>
+        <p><small><span style="color: red;">*</span> Obavezna polja</small></p>
+        <br>
+
+        <input type="submit" class="w3-button w3-blue" value="Pošalji">
+    </form>
+{% endblock %}
