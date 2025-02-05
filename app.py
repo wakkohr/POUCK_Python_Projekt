@@ -162,18 +162,37 @@ def naselje_brisi(naselje_id):
 # --------------------- VRIJEME ----------------------- #
 import requests
 
-@app.route('/prikaz_vremena')
-def prikaz_vremena(weather_data):
-    return render_template('prikaz_vremena.html')
+@app.route('/prikaz_vremena/<int:naselje_id>/<int:drzava_id>')
+def prikaz_vremena(naselje_id, drzava_id):
+    naselje = Naselje.query.filter_by(ID=naselje_id).first()
+    drzava = Drzava.query.filter_by(ID=drzava_id).first()
+    weather_data = None
+
+    if naselje and drzava:
+        geo_url = f'http://api.openweathermap.org/geo/1.0/direct?q={naselje.Naziv},{drzava.ISO2}&limit=1&appid={API_KLJUC_OPENWEATHERMAP}'
+        geo_response = requests.get(geo_url)
+
+        if geo_response.status_code == 200:
+            geo_data = geo_response.json()
+            if geo_data:
+                latitude = geo_data[0]['lat']
+                longitude = geo_data[0]['lon']
+
+                weather_url = f'https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={API_KLJUC_OPENWEATHERMAP}&units=metric&lang=hr'
+                weather_response = requests.get(weather_url)
+
+                if weather_response.status_code == 200:
+                    weather_data = weather_response.json()
+
+    return render_template('prikaz_vremena.html', weather_data=weather_data, naselje=naselje, drzava=drzava)
+
 
 @app.route('/obrazac_vremena', methods=['GET', 'POST'])
 def obrazac_vremena():
-    odabrana_drzava_id = None
-    odabrano_naselje_id = None
     drzave = Drzava.query.order_by(Drzava.Naziv).all()
     naselja = []
-    geocoordinates = None
-    weather_data = None
+    odabrana_drzava_id = None
+    odabrano_naselje_id = None
 
     if request.method == 'POST':
         odabrana_drzava_id = request.form.get('drzava')
@@ -181,40 +200,13 @@ def obrazac_vremena():
 
         if odabrana_drzava_id:
             odabrana_drzava_id = int(odabrana_drzava_id)
-
-        if odabrana_drzava_id:
             naselja = Naselje.query.filter_by(Drzava_ID=odabrana_drzava_id).order_by(Naselje.Naziv).all()
 
-        if odabrana_drzava_id and odabrano_naselje_id:
-            try:
+            if odabrano_naselje_id:
                 odabrano_naselje_id = int(odabrano_naselje_id)
-            except ValueError:
-                print("Invalid settlement ID.")
-                return redirect(url_for('obrazac_vremena'))
+                return redirect(url_for('prikaz_vremena', naselje_id=odabrano_naselje_id, drzava_id=odabrana_drzava_id))
 
-            naselje = Naselje.query.filter_by(ID=odabrano_naselje_id).first()
-            drzava = Drzava.query.filter_by(ID=odabrana_drzava_id).first()
-
-            if naselje and drzava:
-                geo_url = f'http://api.openweathermap.org/geo/1.0/direct?q={naselje.Naziv},{drzava.ISO2}&limit=1&appid={API_KLJUC_OPENWEATHERMAP}'
-                geo_response = requests.get(geo_url)
-
-                if geo_response.status_code == 200:
-                    geo_data = geo_response.json()
-                    if geo_data:
-                        latitude = geo_data[0]['lat']
-                        longitude = geo_data[0]['lon']
-                        geocoordinates = {'latitude': latitude, 'longitude': longitude}
-
-                        weather_url = f'https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={API_KLJUC_OPENWEATHERMAP}&units=metric&lang=hr'
-                        weather_response = requests.get(weather_url)
-
-                        if weather_response.status_code == 200:
-                            weather_data = weather_response.json()
-
-            return render_template('prikaz_vremena.html', weather_data=weather_data, naselje=naselje, drzava=drzava)
-
-    return render_template('obrazac_vremena.html', drzave=drzave, naselja=naselja, odabrana_drzava_id=odabrana_drzava_id, geocoordinates=geocoordinates, weather_data=weather_data)
+    return render_template('obrazac_vremena.html', drzave=drzave, naselja=naselja, odabrana_drzava_id=odabrana_drzava_id)
 
 
 # --------------------- API ----------------------- #
@@ -222,7 +214,6 @@ def obrazac_vremena():
 @app.route('/api')
 def api():
     return render_template('api.html')
-
 
 
 # --------------------- MAIN ----------------------- #
