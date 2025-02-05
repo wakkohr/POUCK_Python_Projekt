@@ -60,7 +60,7 @@ def pocetna():
 
 @app.route('/drzave')
 def drzave():
-    lista_drzava = db.session.query(Drzava).all()
+    lista_drzava = db.session.query(Drzava).order_by(Drzava.Naziv).all()
     return render_template('drzave.html', lista_drzava=lista_drzava)
 
 @app.route('/drzava_obrazac/<int:drzava_id>', methods=['GET', 'POST'])
@@ -109,7 +109,7 @@ def drzava_brisi(drzava_id):
 
 @app.route('/naselja')
 def naselja():
-    lista_naselja = db.session.query(Naselje).all()
+    lista_naselja = db.session.query(Naselje).order_by(Naselje.Naziv).all()
     return render_template('naselja.html', lista_naselja=lista_naselja)
 
 
@@ -117,7 +117,7 @@ def naselja():
 def naselje_obrazac(naselje_id):
     if request.method == "GET":
         naselje = db.session.query(Naselje).where(Naselje.ID == naselje_id).first()
-        dostupne_drzave = db.session.query(Drzava).all()
+        dostupne_drzave = db.session.query(Drzava).order_by(Drzava.Naziv).all()
         return render_template("naselje_obrazac.html", naselje=naselje, dostupne_drzave=dostupne_drzave)
     else:
         zemljopisna_sirina = request.form.get("sirina") or None
@@ -170,7 +170,7 @@ def prikaz_vremena(weather_data):
 def obrazac_vremena():
     odabrana_drzava_id = None
     odabrano_naselje_id = None
-    drzave = Drzava.query.all()
+    drzave = Drzava.query.order_by(Drzava.Naziv).all()
     naselja = []
     geocoordinates = None
     weather_data = None
@@ -183,7 +183,7 @@ def obrazac_vremena():
             odabrana_drzava_id = int(odabrana_drzava_id)
 
         if odabrana_drzava_id:
-            naselja = Naselje.query.filter_by(Drzava_ID=odabrana_drzava_id).all()
+            naselja = Naselje.query.filter_by(Drzava_ID=odabrana_drzava_id).order_by(Naselje.Naziv).all()
 
         if odabrana_drzava_id and odabrano_naselje_id:
             try:
@@ -212,7 +212,7 @@ def obrazac_vremena():
                         if weather_response.status_code == 200:
                             weather_data = weather_response.json()
 
-            return render_template('prikaz_vremena.html', weather_data=weather_data, naselje=naselje)
+            return render_template('prikaz_vremena.html', weather_data=weather_data, naselje=naselje, drzava=drzava)
 
     return render_template('obrazac_vremena.html', drzave=drzave, naselja=naselja, odabrana_drzava_id=odabrana_drzava_id, geocoordinates=geocoordinates, weather_data=weather_data)
 

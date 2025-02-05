@@ -14,7 +14,7 @@ Unos podataka
 
         <label for="drzava_id">Država: <span style="color: red;">*</span> </label>
         <select id="drzava_id" name="drzava_id" required>
-            <option value="" disabled selected>-- Odaberite ID države --</option>
+            <option value="" disabled selected>-- Odaberite državu --</option>
             {% for drzava in dostupne_drzave %}
                 <option value="{{ drzava.ID }}" {% if naselje and naselje.Drzava_ID == drzava.ID %}selected{% endif %}>{{ drzava.Naziv }}</option>
             {% endfor %}
