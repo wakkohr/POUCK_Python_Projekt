@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block sadrzaj %}
+<div class="main-container" style="display: flex; justify-content: center;">
+    <div class="data-container" style="width: 100%; max-width: 515px; text-align: center; line-height: 1;">
+        <h2 style="text-align: center; margin-bottom: 30px;">{{ naselje.Naziv }}, {{ drzava.Naziv }}</h2>
+        {% if naselje %}
+        <!-- popunjavanje rječnika za prikaz podataka kako bi se kasnije mogla prikazati polja samo ako su popunjena -->
+            {% set polja = {
+                            "Kategorija naselja": naselje.Kategorija_naselja,
+                            "Površina": naselje.Povrsina ~ " km²" if naselje.Povrsina is not none else None,
+                            "Broj stanovnika": naselje.Broj_stanovnika,
+                            "Poznate osobe": naselje.Poznate_osobe,
+                            "Zemljopisna širina": naselje.Zemljopisna_sirina ~ "°" if naselje.Zemljopisna_sirina is not none else None,
+                            "Zemljopisna dužina": naselje.Zemljopisna_duzina ~ "°" if naselje.Zemljopisna_duzina is not none else None
+                        } %}
+
+                        {% for key, value in polja.items() %}
+                            {% if value is not none and value != "" %}
+                                <p>{{ key }}: {{ value }}</p>
+                            {% endif %}
+                        {% endfor %}
+        {% else %}
+            <p>Nema podataka za prikaz informacija naselja.</p>
+        {% endif %}
+
+        <button onclick="window.location.href='/obrazac_vremena'" class="w3-button w3-blue" style="margin-top: 20px;">Natrag</button>
+    </div>
+</div>
+{% endblock %}

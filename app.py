@@ -237,8 +237,16 @@ def kvaliteta_zraka(naselje_id, drzava_id):
 
                 if weather_response.status_code == 200:
                     weather_data = weather_response.json()
-                    print(weather_data)
+
     return render_template('kvaliteta_zraka.html', weather_data=weather_data, naselje=naselje, drzava=drzava)
+
+
+@app.route('/informacije_naselja/<int:naselje_id>/<int:drzava_id>')
+def informacije_naselja(naselje_id, drzava_id):
+    naselje = Naselje.query.filter_by(ID=naselje_id).first()
+    drzava = Drzava.query.filter_by(ID=drzava_id).first()
+
+    return render_template('informacije_naselja.html', naselje=naselje, drzava=drzava)
 
 
 # --------------------- API ----------------------- #
