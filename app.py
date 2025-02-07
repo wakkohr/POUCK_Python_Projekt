@@ -162,6 +162,35 @@ def naselje_brisi(naselje_id):
 # --------------------- VRIJEME ----------------------- #
 import requests
 
+@app.route('/obrazac_vremena', methods=['GET', 'POST'])
+def obrazac_vremena():
+    drzave = Drzava.query.order_by(Drzava.Naziv).all()
+    naselja = []
+    odabrana_drzava_id = None
+    odabrano_naselje_id = None
+
+    if request.method == 'POST':
+        odabrana_drzava_id = request.form.get('drzava')
+        odabrano_naselje_id = request.form.get('naselje')
+        action = request.form.get('action', '')
+
+        if odabrana_drzava_id:
+            odabrana_drzava_id = int(odabrana_drzava_id)
+            naselja = Naselje.query.filter_by(Drzava_ID=odabrana_drzava_id).order_by(Naselje.Naziv).all()
+
+            if odabrano_naselje_id:
+                odabrano_naselje_id = int(odabrano_naselje_id)
+
+                if action == "vremenska_prognoza":
+                    return redirect(url_for('prikaz_vremena', naselje_id=odabrano_naselje_id, drzava_id=odabrana_drzava_id))
+                elif action == "kvaliteta_zraka":
+                    return redirect(url_for('kvaliteta_zraka', naselje_id=odabrano_naselje_id, drzava_id=odabrana_drzava_id))
+                elif action == "informacije_naselja":
+                    return redirect(url_for('informacije_naselja', naselje_id=odabrano_naselje_id, drzava_id=odabrana_drzava_id))
+
+    return render_template('obrazac_vremena.html', drzave=drzave, naselja=naselja, odabrana_drzava_id=odabrana_drzava_id)
+
+
 @app.route('/prikaz_vremena/<int:naselje_id>/<int:drzava_id>')
 def prikaz_vremena(naselje_id, drzava_id):
     naselje = Naselje.query.filter_by(ID=naselje_id).first()
@@ -169,7 +198,7 @@ def prikaz_vremena(naselje_id, drzava_id):
     weather_data = None
 
     if naselje and drzava:
-        geo_url = f'http://api.openweathermap.org/geo/1.0/direct?q={naselje.Naziv},{drzava.ISO2}&limit=1&appid={API_KLJUC_OPENWEATHERMAP}'
+        geo_url = f'https://api.openweathermap.org/geo/1.0/direct?q={naselje.Naziv},{drzava.ISO2}&limit=1&appid={API_KLJUC_OPENWEATHERMAP}'
         geo_response = requests.get(geo_url)
 
         if geo_response.status_code == 200:
@@ -187,26 +216,29 @@ def prikaz_vremena(naselje_id, drzava_id):
     return render_template('prikaz_vremena.html', weather_data=weather_data, naselje=naselje, drzava=drzava)
 
 
-@app.route('/obrazac_vremena', methods=['GET', 'POST'])
-def obrazac_vremena():
-    drzave = Drzava.query.order_by(Drzava.Naziv).all()
-    naselja = []
-    odabrana_drzava_id = None
-    odabrano_naselje_id = None
+@app.route('/kvaliteta_zraka/<int:naselje_id>/<int:drzava_id>')
+def kvaliteta_zraka(naselje_id, drzava_id):
+    naselje = Naselje.query.filter_by(ID=naselje_id).first()
+    drzava = Drzava.query.filter_by(ID=drzava_id).first()
+    weather_data = None
 
-    if request.method == 'POST':
-        odabrana_drzava_id = request.form.get('drzava')
-        odabrano_naselje_id = request.form.get('naselje')
+    if naselje and drzava:
+        geo_url = f'https://api.openweathermap.org/geo/1.0/direct?q={naselje.Naziv},{drzava.ISO2}&limit=1&appid={API_KLJUC_OPENWEATHERMAP}'
+        geo_response = requests.get(geo_url)
 
-        if odabrana_drzava_id:
-            odabrana_drzava_id = int(odabrana_drzava_id)
-            naselja = Naselje.query.filter_by(Drzava_ID=odabrana_drzava_id).order_by(Naselje.Naziv).all()
+        if geo_response.status_code == 200:
+            geo_data = geo_response.json()
+            if geo_data:
+                latitude = geo_data[0]['lat']
+                longitude = geo_data[0]['lon']
 
-            if odabrano_naselje_id:
-                odabrano_naselje_id = int(odabrano_naselje_id)
-                return redirect(url_for('prikaz_vremena', naselje_id=odabrano_naselje_id, drzava_id=odabrana_drzava_id))
+                weather_url = f'https://api.openweathermap.org/data/2.5/air_pollution?lat={latitude}&lon={longitude}&appid={API_KLJUC_OPENWEATHERMAP}&units=metric&lang=hr'
+                weather_response = requests.get(weather_url)
 
-    return render_template('obrazac_vremena.html', drzave=drzave, naselja=naselja, odabrana_drzava_id=odabrana_drzava_id)
+                if weather_response.status_code == 200:
+                    weather_data = weather_response.json()
+                    print(weather_data)
+    return render_template('kvaliteta_zraka.html', weather_data=weather_data, naselje=naselje, drzava=drzava)
 
 
 # --------------------- API ----------------------- #

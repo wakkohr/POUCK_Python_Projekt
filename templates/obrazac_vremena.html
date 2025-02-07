@@ -17,7 +17,7 @@
                     {% endfor %}
                 </select>
 
-                <label for="naselje">Odaberite naselje:</label>
+                <label for="naselje" style="margin-top: 20px;">Odaberite naselje:</label>
                 <select name="naselje" id="naselje">
                     <option value="" disabled selected>-- Odaberite naselje --</option>
                     {% for naselje in naselja %}
@@ -27,8 +27,11 @@
             </div>
 
             <div class="fancy-label-input-container">
-                <input type="submit" value="Prikaz prognoze" class="w3-button w3-blue" style="align-self: center; font-size: 16px; padding: 15px;">
+                <button type="submit" name="action" value="vremenska_prognoza" class="w3-button w3-blue" style="align-self: center; font-size: 16px; padding: 15px;">Prikaz prognoze</button>
+                <button type="submit" name="action" value="kvaliteta_zraka" class="w3-button w3-blue" style="align-self: center; font-size: 16px; padding: 15px;">Prikaz kvalitete zraka</button>
+                <button type="submit" name="action" value="informacije_naselja" class="w3-button w3-blue" style="align-self: center; font-size: 16px; padding: 15px;">Prikaz informacija naselja</button>
             </div>
+
         </form>
     </div>
 </div>

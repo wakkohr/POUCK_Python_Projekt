@@ -6,9 +6,9 @@
         <h2 style="text-align: center; margin-bottom: 30px;">{{ naselje.Naziv }}, {{ drzava.Naziv }}</h2>
         {% if weather_data %}
 
-            <img src="http://openweathermap.org/img/w/{{ weather_data.weather[0].icon }}.png" alt="Weather Icon" style="transform: scale(1.5);">
-            <p>Opis: {{ weather_data.weather[0].description }}</p>
-            <p>Temperatura: {{ weather_data.main.temp }}°C</p>
+            <img src="https://openweathermap.org/img/w/{{ weather_data.weather[0].icon }}.png" alt="Weather Icon" style="transform: scale(1.5);">
+            <p><strong>Opis: {{ weather_data.weather[0].description }}</strong></p>
+            <p><strong>Temperatura: {{ weather_data.main.temp }}°C</strong></p>
             <p>Osjećaj je kao: {{ weather_data.main.feels_like }}°C</p>
             <p>Vjetar: {{ weather_data.wind.speed }} m/s</p>
             <p>Vlažnost: {{ weather_data.main.humidity }}%</p>
@@ -17,7 +17,7 @@
             <p>Zemljopisna dužina: {{ weather_data.coord.lon }}°</p>
 
         {% else %}
-            <p>No weather data available.</p>
+            <p>Nema podataka za prikaz vremena.</p>
         {% endif %}
 
         <button onclick="window.location.href='/obrazac_vremena'" class="w3-button w3-blue" style="margin-top: 20px;">Natrag</button>

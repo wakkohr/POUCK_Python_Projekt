@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block sadrzaj %}
+<div class="main-container" style="display: flex; justify-content: center;">
+    <div class="data-container" style="width: 100%; max-width: 515px; text-align: center; line-height: 1;">
+        <h2 style="text-align: center; margin-bottom: 30px;">{{ naselje.Naziv }}, {{ drzava.Naziv }}</h2>
+       {% if weather_data and weather_data.list %}
+            {% set air_quality = weather_data.list[0] %}
+
+            <p><strong>Indeks kvalitete zraka (AQI): {{ air_quality.main.aqi }}</strong></p>
+            <p>Ugljični monoksid (CO): {{ air_quality.components.co }} µg/m<sup>3</sup></p>
+            <p>Dušikov oksid (NO): {{ air_quality.components.no }} µg/m<sup>3</sup></p>
+            <p>Dušikov dioksid (NO<sub>2</sub>): {{ air_quality.components.no2 }} µg/m<sup>3</sup></p>
+            <p>Ozon (O<sub>3</sub>): {{ air_quality.components.o3 }} µg/m<sup>3</sup></p>
+            <p>Sumporov dioksid (SO<sub>2</sub>): {{ air_quality.components.so2 }} µg/m<sup>3</sup></p>
+            <p>Čestice fine prašine (PM<sub>2.5</sub>): {{ air_quality.components.pm2_5 }} µg/m<sup>3</sup></p>
+            <p>Grube čestice prašine (PM<sub>10</sub>): {{ air_quality.components.pm10 }} µg/m<sup>3</sup></p>
+            <p>Amonijak (NH<sub>3</sub>): {{ air_quality.components.nh3 }} µg/m<sup>3</sup></p>
+            <p>Zemljopisna širina: {{ weather_data.coord.lat }}°</p>
+            <p>Zemljopisna dužina: {{ weather_data.coord.lon }}°</p>
+
+        {% else %}
+            <p>Nema podataka za prikaz kvalitete zraka.</p>
+        {% endif %}
+
+        <button onclick="window.location.href='/obrazac_vremena'" class="w3-button w3-blue" style="margin-top: 20px;">Natrag</button>
+    </div>
+</div>
+{% endblock %}
