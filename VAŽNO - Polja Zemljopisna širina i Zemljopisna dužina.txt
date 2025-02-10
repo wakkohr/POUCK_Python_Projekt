@@ -1,7 +1,0 @@
-Polja Zemljopisna širina i Zemljopisna dužina se trebaju
-automatski popuniti pozivanjem Geocoding API-ja prilikom
-kreiranja zapisa. Također, prilikom ažuriranja postojećeg zapisa,
-ta polja moraju biti zaključana kako bi se onemogućilo ručno
-uređivanje. Na autoru je odgovornost da na prikladan način
-prikaže eventualne pogreške (npr. obavijest na stranici) u slučaju
-kada Geocoding API ne uspije dohvatiti zemljopisne koordinate.

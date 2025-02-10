@@ -1,21 +1,23 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
 
-from werkzeug.exceptions import BadRequest
+#from datetime import datetime
+#from werkzeug.exceptions import BadRequest
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///baza.db'
 
 db = SQLAlchemy(app)
 
-# --------------------- API ----------------------- #
+
+# --------------------- API ključ ----------------------- #
 
 from dotenv import load_dotenv
 import os
 
 load_dotenv("api_kljuc.env")
 API_KLJUC_OPENWEATHERMAP = os.environ.get("API_KLJUC_OPENWEATHERMAP")
+
 
 
 # --------------------- TABELE BAZE ----------------------- #
@@ -33,6 +35,7 @@ class Drzava(db.Model):
     Jezici = db.Column(db.String(100), nullable=False)
 
     naselja = db.relationship('Naselje', backref='drzava', cascade='all, delete-orphan')
+
 
 class Naselje(db.Model):
     __tablename__ = 'Naselje'
@@ -56,12 +59,14 @@ def pocetna():
     return render_template("index.html")
 
 
+
 # --------------------- DRŽAVE ----------------------- #
 
 @app.route('/drzave')
 def drzave():
     lista_drzava = db.session.query(Drzava).order_by(Drzava.Naziv).all()
     return render_template('drzave.html', lista_drzava=lista_drzava)
+
 
 @app.route('/drzava_obrazac/<int:drzava_id>', methods=['GET', 'POST'])
 def drzava_obrazac(drzava_id):
@@ -97,12 +102,14 @@ def drzava_obrazac(drzava_id):
         db.session.commit()
         return redirect(app.url_for("drzave"))
 
+
 @app.route('/drzava_brisi/<int:drzava_id>')
 def drzava_brisi(drzava_id):
     drzava = db.session.query(Drzava).where(Drzava.ID == drzava_id).first()
     db.session.delete(drzava)
     db.session.commit()
     return redirect(app.url_for("drzave"))
+
 
 
 # --------------------- NASELJA ----------------------- #
@@ -120,36 +127,56 @@ def naselje_obrazac(naselje_id):
         dostupne_drzave = db.session.query(Drzava).order_by(Drzava.Naziv).all()
         return render_template("naselje_obrazac.html", naselje=naselje, dostupne_drzave=dostupne_drzave)
     else:
-        zemljopisna_sirina = request.form.get("sirina") or None
-        zemljopisna_duzina = request.form.get("duzina") or None
+        naziv = request.form["naziv"]
+        kategorija = request.form["kategorija"]
+        povrsina = request.form["povrsina"]
+        broj_stanovnika = request.form["broj_stanovnika"]
+        poznate_osobe = request.form["osobe"]
+        drzava_id = request.form["drzava_id"]
+
+        drzava = db.session.query(Drzava).filter(Drzava.ID == drzava_id).first()
+        if not drzava:
+            return "Država nije pronađena", 400
+
+        geo_url = f'https://api.openweathermap.org/geo/1.0/direct?q={naziv},{drzava.ISO2}&limit=1&appid={API_KLJUC_OPENWEATHERMAP}'
+        response = requests.get(geo_url)
+        koordinate = response.json()
+
+        if koordinate and len(koordinate) > 0:
+            zemljopisna_sirina = round(koordinate[0]["lat"], 5)
+            zemljopisna_duzina = round(koordinate[0]["lon"], 5)
+        else:
+            #zemljopisna_sirina = None
+            #zemljopisna_duzina = None
+            return "Koordinate za uneseno naselje nisu pronađeni. Molimo pokušajte ponovno ili unesite drugačiji naziv.", 400
 
         if naselje_id == 0:
-            db.session.add(
-                Naselje(
-                    Naziv=request.form["naziv"],
-                    Kategorija_naselja=request.form["kategorija"],
-                    Zemljopisna_sirina=zemljopisna_sirina,
-                    Zemljopisna_duzina=zemljopisna_duzina,
-                    Povrsina=request.form["povrsina"],
-                    Broj_stanovnika=request.form["broj_stanovnika"],
-                    Poznate_osobe=request.form["osobe"],
-                    Drzava_ID=request.form["drzava_id"]
-                )
+            naselje = Naselje(
+                Naziv=naziv,
+                Kategorija_naselja=kategorija,
+                Zemljopisna_sirina=zemljopisna_sirina,
+                Zemljopisna_duzina=zemljopisna_duzina,
+                Povrsina=povrsina,
+                Broj_stanovnika=broj_stanovnika,
+                Poznate_osobe=poznate_osobe,
+                Drzava_ID=drzava_id
             )
+            db.session.add(naselje)
         else:
             naselje = db.session.query(Naselje).where(Naselje.ID == naselje_id).first()
             if naselje:
-                naselje.Naziv = request.form["naziv"]
-                naselje.Kategorija_naselja = request.form["kategorija"]
+                naselje.Naziv = naziv
+                naselje.Kategorija_naselja = kategorija
                 naselje.Zemljopisna_sirina = zemljopisna_sirina
                 naselje.Zemljopisna_duzina = zemljopisna_duzina
-                naselje.Povrsina = request.form["povrsina"]
-                naselje.Broj_stanovnika = request.form["broj_stanovnika"]
-                naselje.Poznate_osobe = request.form["osobe"]
-                naselje.Drzava_ID = request.form["drzava_id"]
+                naselje.Povrsina = povrsina
+                naselje.Broj_stanovnika = broj_stanovnika
+                naselje.Poznate_osobe = poznate_osobe
+                naselje.Drzava_ID = drzava_id
 
         db.session.commit()
         return redirect(app.url_for("naselja"))
+
 
 @app.route('/naselje_brisi/<int:naselje_id>')
 def naselje_brisi(naselje_id):
@@ -157,6 +184,7 @@ def naselje_brisi(naselje_id):
     db.session.delete(naselje)
     db.session.commit()
     return redirect(app.url_for("naselja"))
+
 
 
 # --------------------- VRIJEME ----------------------- #
@@ -247,6 +275,7 @@ def informacije_naselja(naselje_id, drzava_id):
     drzava = Drzava.query.filter_by(ID=drzava_id).first()
 
     return render_template('informacije_naselja.html', naselje=naselje, drzava=drzava)
+
 
 
 # --------------------- API ----------------------- #
