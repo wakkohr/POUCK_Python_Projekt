@@ -8,12 +8,12 @@
         <!-- popunjavanje rječnika za prikaz podataka kako bi se kasnije mogla prikazati polja samo ako su popunjena -->
             {% set polja = {
                             "Kategorija naselja": naselje.Kategorija_naselja,
-                            "Površina": naselje.Povrsina ~ " km²" if naselje.Povrsina is not none else None,
+                            "Površina": (naselje.Povrsina ~ " km²") if naselje.Povrsina is not none and naselje.Povrsina != "" else None,
                             "Broj stanovnika": naselje.Broj_stanovnika,
                             "Poznate osobe": naselje.Poznate_osobe,
-                            "Zemljopisna širina": naselje.Zemljopisna_sirina ~ "°" if naselje.Zemljopisna_sirina is not none else None,
-                            "Zemljopisna dužina": naselje.Zemljopisna_duzina ~ "°" if naselje.Zemljopisna_duzina is not none else None
-                        } %}
+                            "Zemljopisna širina": naselje.Zemljopisna_sirina ~ "°",
+                            "Zemljopisna dužina": naselje.Zemljopisna_duzina ~ "°"
+            } %}
 
                         {% for key, value in polja.items() %}
                             {% if value is not none and value != "" %}
