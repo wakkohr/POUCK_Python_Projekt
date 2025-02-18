@@ -7,6 +7,12 @@ Unos podataka
 {% block sadrzaj %}
     <h1>Unos podataka naselja</h1>
 
+    {% if error_message %}
+        <div style="color: red;">
+            {{ error_message }}
+        </div>
+    {% endif %}
+
     <form action="{{ request.path }}" method="POST" name="f">
         <label for="naziv">Naziv: <span style="color: red;">*</span> </label>
         <input type="text" id="naziv" name="naziv" maxlength="100" value="{{ naselje.Naziv }}" required>
